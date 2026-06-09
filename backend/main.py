@@ -119,4 +119,20 @@ async def convert(file: UploadFile = File(...), target_format: str = Form(...)):
         headers={"Content-Disposition": f"attachment; filename={out_filename}"},
     )
 
-        
+
+@app.post("/encrypt")
+async def encrypt(file: UploadFile = File(...), password: str = Form(...)):
+    data = await file.read()
+    buf = io.BytesIO()
+    with pyzipper.AESZipFile(buf, "w",
+                             compression = pyzipper.ZIP_DEFLATED,
+                             encryption = pyzipper.WZ_AES) as z:
+        z.setpassword(password.encode("utf-8"))
+        z.writestr(file.filename, data)
+    buf.seek(0)
+    out_name = f"{file.filename}.encrypted.zip"
+    return StreamingResponse(
+        buf,
+        media_type="application/zip",
+        headers={"Content-Disposition": f"attachment; filename={out_name}"},
+    )
