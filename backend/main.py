@@ -67,7 +67,7 @@ async def decrypt(file: UploadFile = File(...), password: str = Form(...)):
 def run_pandoc(data: bytes, from_fmt: str, to_fmt: str) -> bytes:
     cmd = ["pandoc", "-f", from_fmt, "-t", to_fmt, "-o", "-"]
     if to_fmt == "pdf":
-        cmd += ["--pdf-engine=xelatex"]
+        cmd += ["--pdf-engine=tectonic"]
     result = subprocess.run(
         cmd,
         input=data,

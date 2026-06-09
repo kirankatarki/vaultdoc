@@ -3,4 +3,10 @@ services:
     build: ./backend
     ports:
       - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - techtonic_cache:/root/.cache/Tectonic
     restart: unless-stopped
+
+volumes:
+  techtonic_cache:

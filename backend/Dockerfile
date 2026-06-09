@@ -2,12 +2,11 @@ FROM python:3.12-slim
 
 RUN apt-get update && apt-get install -y \
     pandoc \
-    texlive-latex-base \
-    texlive-latex-extra \
-    texlive-fonts-recommended \
-    texlive-xetex \
-    texlive-lang-cyrillic \
+    curl \
     && rm -rf /var/lib/apt/lists/*
+
+RUN curl -L https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.15.0/tectonic-0.15.0-x86_64-unknown-linux-musl.tar.gz \
+      | tar xz -C /usr/local/bin/
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
