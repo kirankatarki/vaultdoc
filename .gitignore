@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.python-version
+backend/dist/
+
+# Extracted DOCX internals
+docProps/
+word/
+_rels/
+*.xml
+
+# Node
+frontend/node_modules/
+frontend/dist/
+.env
+.env.local
+*.envNeed
+
+# Claude Code
+.claude/
