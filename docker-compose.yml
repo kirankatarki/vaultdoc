@@ -6,6 +6,8 @@ services:
     volumes:
       - ./backend:/app
       - techtonic_cache:/root/.cache/Tectonic
+    environment:
+      - UV_LINK_MODE=copy
     restart: unless-stopped
 
 volumes:

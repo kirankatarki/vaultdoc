@@ -1,6 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
 import io
 import subprocess
 import pyzipper
@@ -32,7 +33,12 @@ def detect_format(data: bytes, filename: str) -> tuple[str, bool]:
         fmt = ext
     return fmt, encrypted
 
-@app.post("/detect")
+class DetectResponse(BaseModel):
+    format: str
+    encrypted: bool
+    filename: str
+
+@app.post("/detect", response_model=DetectResponse)
 async def detect(file: UploadFile = File(...)):
     data = await file.read()
     fmt, encrypted = detect_format(data, file.filename)
