@@ -26,7 +26,7 @@ def detect_format(data: bytes, filename: str) -> tuple[str, bool]:
                 z.extractall(pwd=None)
         except Exception:
             encrypted = True
-    elif data[:4] == b"%pdf":
+    elif data[:4] == b"%PDF":
         fmt = "pdf"
     else:
         fmt = ext
@@ -41,3 +41,26 @@ async def detect(file: UploadFile = File(...)):
         "encrypted": encrypted,
         "filename": file.filename,
     }
+
+
+@app.post("/decrypt")
+async def decrypt(file: UploadFile = File(...), password: str = Form(...)):
+    data = await file.read()
+    try:
+        with pyzipper.AESZipFile(io.BytesIO(data)) as z:
+            z.setpassword(password.encode("utf-8"))
+            names = z.namelist()
+            out = z.read(names[0])
+    except RuntimeError as e:
+        raise HTTPException(status_code=400, detail=f"Decryption failed: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Invalid zip file: {str(e)}")
+    
+    return StreamingResponse(
+        io.BytesIO(out),
+        media_type="application/octet-stream",
+        headers={"Content-Disposition": f"attachment; filename={names[0]}"},
+    )
+
+
+        
