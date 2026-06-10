@@ -11,6 +11,7 @@ interface Props {
 export function FileUpload({ onFileDetected }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   async function handleFile(file: File) {
@@ -33,29 +34,47 @@ export function FileUpload({ onFileDetected }: Props) {
 
   function handleDrop(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
+    setDragging(false);
     const file = e.dataTransfer.files?.[0];
     if (file) handleFile(file);
   }
 
   function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
+    setDragging(true);
+  }
+
+  function handleDragLeave() {
+    setDragging(false);
   }
 
   return (
-    <div
-      onDrop={handleDrop}
-      onDragOver={handleDragOver}
-      onClick={() => inputRef.current?.click()}
-    >
-      <input
-        ref={inputRef}
-        type="file"
-        accept=".epub, .pdf, .docx"
-        onChange={handleChange}
-        style={{ display: "none" }}
-      />
-      {loading ? <p>Detecting...</p> : <p>Drop file here or click to browse</p>}
-      {error && <p>{error}</p>}
+    <div>
+      <div
+        className={`dropzone${dragging ? " dragging" : ""}`}
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onClick={() => inputRef.current?.click()}
+      >
+        <input
+          ref={inputRef}
+          type="file"
+          accept=".epub, .pdf, .docx"
+          onChange={handleChange}
+          style={{ display: "none" }}
+        />
+        <div className="upload-ic">
+          <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 16V4" />
+            <path d="M6 10l6-6 6 6" />
+            <path d="M4 18v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+          </svg>
+        </div>
+        <p>{loading ? "Detecting..." : "Drop file here or click to browse"}</p>
+        <p className="hint">Supports .epub, .pdf, .docx</p>
+      </div>
+      {error && <p className="error-text">{error}</p>}
     </div>
   );
 }

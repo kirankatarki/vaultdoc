@@ -5,7 +5,7 @@ export interface DetectResponse {
 }
 
 export interface ApiError {
-  details: string;
+  detail: string;
 }
 
 export type TargetFormat = "epub" | "docx" | "pdf";
